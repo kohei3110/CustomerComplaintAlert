@@ -1,6 +1,7 @@
 import json
-
+import pandas as pd
 from azure.eventhub import EventHubConsumerClient
+from io import BytesIO  # Add this import
 
 
 class EventHubService:
@@ -15,6 +16,25 @@ class EventHubService:
         self.blob_storage_service = blob_storage_service
 
 
+    def download_blob(self, container_name, blob_name):
+        try:
+            sas_token = self.blob_storage_service.get_sas_token(container_name, blob_name)
+            blob_data = self.blob_storage_service.download_blob(container_name, blob_name, sas_token)
+            return blob_data
+        except Exception as e:
+            print(f"Error downloading blob: {e}")
+            return None
+
+
+    def read_excel(self, blob_data):
+        try:
+            df = pd.read_excel(BytesIO(blob_data), engine='openpyxl')  # Wrap blob_data in BytesIO and specify engine
+            return df
+        except Exception as e:
+            print(f"Error reading Excel file: {e}")
+            return None
+
+
     def on_event(self, partition_context, event):
 
         try:
@@ -23,11 +43,18 @@ class EventHubService:
             for item in event_data:
                 url = item.get("data").get("url")
                 print(f"Received blob url: {url}")
+                url_parts = url.split('/')
+                container_name = url_parts[-2]
+                blob_name = url_parts[-1]
+                blob_data = self.download_blob(container_name, blob_name)
+                if (blob_data):
+                    df = self.read_excel(blob_data)
+                    if df is not None:
+                        print(f"Excel data: {df}")
 
             # チェックポイントを更新して、イベントが再度処理されないようにする
             partition_context.update_checkpoint(event)
 
-            # TODO: SAS を取得して、Blob をダウンロードする
             # TODO: Blob を解析して、クレーム内容を取得する
             # TODO: クレーム内容を Azure OpenAI で構造化する
             # TODO: クレーム内容を Cosmos DB に保存する
