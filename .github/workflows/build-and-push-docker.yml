@@ -27,6 +27,7 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build and push Docker image
+        working-directory: ./src
         run: |
           az acr build --registry crcustomercompliantalertdemoeastus001 \
                          --image customercompliantalert:${{ github.sha }} .
