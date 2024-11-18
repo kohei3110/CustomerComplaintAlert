@@ -29,8 +29,5 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t crcustomercompliantalertdemoeastus001.azurecr.io/customercompliantalert:${{ github.sha }} .
-          docker push crcustomercompliantalertdemoeastus001.azurecr.io/customercompliantalert:${{ github.sha }}
-
-      - name: Log out from Azure Container Registry
-        run: docker logout crcustomercompliantalertdemoeastus001.azurecr.io
+          az acr build --registry crcustomercompliantalertdemoeastus001 \
+                         --image customercompliantalert:${{ github.sha }} .
