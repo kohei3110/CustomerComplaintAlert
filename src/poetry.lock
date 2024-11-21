@@ -51,6 +51,21 @@ typing-extensions = ">=4.6.0"
 aio = ["aiohttp (>=3.0)"]
 
 [[package]]
+name = "azure-cosmos"
+version = "4.9.0"
+description = "Microsoft Azure Cosmos Client Library for Python"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "azure_cosmos-4.9.0-py3-none-any.whl", hash = "sha256:3b60eaa01a16a857d0faf0cec304bac6fa8620a81bc268ce760339032ef617fe"},
+    {file = "azure_cosmos-4.9.0.tar.gz", hash = "sha256:c70db4cbf55b0ff261ed7bb8aa325a5dfa565d3c6eaa43d75d26ae5e2ad6d74f"},
+]
+
+[package.dependencies]
+azure-core = ">=1.30.0"
+typing-extensions = ">=4.6.0"
+
+[[package]]
 name = "azure-eventhub"
 version = "5.13.0"
 description = "Microsoft Azure Event Hubs Client Library for Python"
@@ -884,4 +899,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "f100b4cdc60bca9e7b95a79f7cf3db495610d66d1de9be3379e4025f5846ef56"
+content-hash = "730f52978eab135fa3528b376959f06c453f445b778acccfcdff401293dd41ca"
