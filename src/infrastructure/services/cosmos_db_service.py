@@ -1,4 +1,5 @@
 from azure.cosmos import CosmosClient
+from azure.cosmos.exceptions import CosmosHttpResponseError
 
 class CosmosDbService:
 
@@ -17,4 +18,8 @@ class CosmosDbService:
                 "product": row["対象製品"],
                 "date": row["日付"].isoformat() if hasattr(row["日付"], "isoformat") else row["日付"]
             }
-            self.cosmos_db_client.get_database_client("complaints_db").get_container_client("complaints").upsert_item(document)
+            try:
+                self.cosmos_db_client.get_database_client("complaints_db") \
+                    .get_container_client("complaints").upsert_item(document)
+            except CosmosHttpResponseError as e:
+                print(f"Failed to upsert item: {e.message}")
