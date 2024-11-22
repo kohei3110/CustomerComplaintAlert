@@ -44,6 +44,7 @@
 
 4. アプリケーションを起動します。
     ```sh
+    cd ./src
     uvicorn presentation.controllers.entry:app --host 0.0.0.0 --port 8000
     ```
 
@@ -51,4 +52,53 @@
 
 ```sh
 uvicorn presentation.controllers.entry:app --reload
+```
+
+## GitHub Actions
+
+このリポジトリには、GitHub Actionsを使用してDockerイメージをビルドし、Azure Container Registryにプッシュするためのワークフローが含まれています。
+
+### ワークフローの内容
+
+- リポジトリのコードをチェックアウト
+- Azureにログイン
+- Azure Container Registryにログイン
+- Dockerイメージをビルドしてプッシュ
+
+### ワークフローの設定ファイル
+
+ワークフローの設定ファイルは、[.github/workflows/build-and-push-docker.yml](.github/workflows/build-and-push-docker.yml)にあります。
+
+```
+name: Build and Push Docker Image
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to Azure Container Registry
+        uses: azure/docker-login@v2
+        with:
+          login-server: crcustomercompliantalertdemoeastus001.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push Docker image
+        working-directory: ./src
+        run: |
+          az acr build --registry crcustomercompliantalertdemoeastus001 \
+                         --image customercompliantalert:${{ github.sha }} .
 ```
