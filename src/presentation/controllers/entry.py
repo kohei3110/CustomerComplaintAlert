@@ -7,6 +7,7 @@ from infrastructure.services.blob_storage_service import BlobStorageService
 from infrastructure.services.cosmos_db_service import CosmosDbService
 from infrastructure.services.event_hub_service import EventHubService
 from application.services.event_processor import EventProcessor
+from infrastructure.services.openai_service import OpenAIService
 
 
 # Load environment variables from .env file
@@ -23,8 +24,9 @@ async def run_event_processor():
 
     blob_storage_service = BlobStorageService(blob_storage_connection_str)
     cosmos_db_service = CosmosDbService(os.environ.get("COSMOS_DB_CONNECTION_STR"))
+    openai_service = OpenAIService()
     event_hub_service = EventHubService(
-        event_hub_connection_str, event_hub_name, consumer_group, blob_storage_service, cosmos_db_service
+        event_hub_connection_str, event_hub_name, consumer_group, blob_storage_service, cosmos_db_service, openai_service
     )
     event_processor = EventProcessor(event_hub_service)
 

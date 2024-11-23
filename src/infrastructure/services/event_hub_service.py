@@ -9,7 +9,7 @@ from azure.cosmos import CosmosClient
 class EventHubService:
 
 
-    def __init__(self, connection_string, event_hub_name, consumer_group, blob_storage_service, cosmos_db_service):
+    def __init__(self, connection_string, event_hub_name, consumer_group, blob_storage_service, cosmos_db_service, openai_service):
         self.client = EventHubConsumerClient.from_connection_string(
             conn_str=connection_string,
             consumer_group=consumer_group,
@@ -17,6 +17,7 @@ class EventHubService:
         )
         self.blob_storage_service = blob_storage_service
         self.cosmos_db_service = cosmos_db_service
+        self.openai_service = openai_service
 
 
     def download_blob(self, container_name, blob_name):
@@ -55,14 +56,18 @@ class EventHubService:
                     if df is not None:
                         print(f"Excel data: {df}")
                         self.cosmos_db_service.save_to_cosmos_db(df)
+                        result = self.openai_service.get_complaint_score(df)
+                        if result:
+                            print(f"Result: {result}")
+                            # FIXME: ここで結果を Cosmos DB に再保存する
+                            # FIXME; スコアが5だったら、メールを送信する
+                            
+                        else:
+                            print("Result is empty")
                     else:
                         print("Excel data is None")
 
             partition_context.update_checkpoint(event)
-
-            # TODO: クレーム内容を Azure OpenAI で構造化する
-
-            # TODO: 一定の条件を満たしたら、メールを送信する
 
         except (json.JSONDecodeError, KeyError, TypeError) as e:
             print(f"Error processing event: {e}")
