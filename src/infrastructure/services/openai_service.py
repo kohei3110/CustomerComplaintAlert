@@ -1,9 +1,10 @@
+import time
+import json
 import os
 
 from openai import AzureOpenAI
 import pandas as pd
 
-from domain.models.complaint import Complaint
 from infrastructure.services.cosmos_db_service import CosmosDbService
 
 
@@ -34,6 +35,7 @@ class OpenAIService:
 
     def get_complaint_score(self, df):
         client = self.get_client()
+        results = []
         for _, row in df.iterrows():
             input = {
                 "id": str(row["クレームID"]),
@@ -46,6 +48,7 @@ class OpenAIService:
             system_prompt = self.cosmos_db_service.get_system_prompt()
             response = client.chat.completions.create(
                 model=self.deployment,
+                response_format={ "type": "json_object" },
                 messages=[
                     {
                         "role": "system",
@@ -57,4 +60,8 @@ class OpenAIService:
                     }
                 ]
             )
-            return response.choices[0].message.content
+            print(f"Result: {response.choices[0].message.content}")
+            results.append(json.loads(response.choices[0].message.content))
+            # レート制限回避のため、10秒待機
+            time.sleep(10)
+        return results
