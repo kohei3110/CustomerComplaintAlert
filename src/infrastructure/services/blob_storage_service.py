@@ -27,3 +27,16 @@ class BlobStorageService:
         blob_client_sas: BlobClient = BlobClient.from_blob_url(blob_url=sas_url)
         blob_data = blob_client_sas.download_blob().readall()
         return blob_data
+
+    def extract_complaint_details(self, container_name, blob_name):
+        """
+        Blob を解析して、クレーム内容を取得する
+        """
+        blob_data = self.get_blob_data(container_name, blob_name)
+        
+        # クレーム内容を解析するロジックをここに実装
+        # 例として、JSON形式のデータを解析する
+        import json
+        complaint_details = json.loads(blob_data)
+        
+        return complaint_details
