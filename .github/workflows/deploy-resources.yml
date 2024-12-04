@@ -25,6 +25,7 @@ jobs:
       - name: Creating Azure Resources
         uses: azure/arm-deploy@v1
         with:
+          scope: subscription
           resourceGroupName: rg-cca-demo-eastus-001
           template: ./infra/main.bicep
           parameters: ./infra/main.bicepparam
