@@ -27,5 +27,6 @@ jobs:
         with:
           scope: subscription
           resourceGroupName: rg-cca-demo-eastus-001
+          region: eastus
           template: ./infra/main.bicep
           parameters: ./infra/main.bicepparam
