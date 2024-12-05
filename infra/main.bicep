@@ -25,7 +25,7 @@ var tags = {
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   location: location
   tags: tags
-  name: !empty(resourceGroupName) ? resourceGroupName : '${abbrs.resourcesResourceGroups}ner-${environmentName}-${location}-001'
+  name: !empty(resourceGroupName) ? resourceGroupName : '${abbrs.resourcesResourceGroups}cca-${environmentName}-${location}-001'
 }
 
 // Monitor application with Azure Monitor
@@ -35,8 +35,8 @@ module monitoring 'shared/monitor/monitoring.bicep' = {
   params: {
     location: location
     tags: tags
-    logAnalyticsName: !empty(logAnalyticsName) ? logAnalyticsName : '${abbrs.operationalInsightsWorkspaces}ner-${environmentName}-${location}-001'
-    applicationInsightsName: !empty(applicationInsightsName) ? applicationInsightsName : '${abbrs.insightsComponents}ner-${environmentName}-${location}-001'
+    logAnalyticsName: !empty(logAnalyticsName) ? logAnalyticsName : '${abbrs.operationalInsightsWorkspaces}cca-${environmentName}-${location}-001'
+    applicationInsightsName: !empty(applicationInsightsName) ? applicationInsightsName : '${abbrs.insightsComponents}cca-${environmentName}-${location}-001'
   }
 }
 
@@ -44,7 +44,7 @@ module storage 'core/storage/storageAccount.bicep' = {
   name: 'storage'
   scope: rg
   params: {
-    documentStorageName: '${abbrs.storageStorageAccounts}ner${location}${resourceToken}'
+    documentStorageName: '${abbrs.storageStorageAccounts}cca${location}${resourceToken}'
   }
 }
 
@@ -54,7 +54,7 @@ module azureOpenAi 'core/cognitive/azureOpenAI.bicep' = {
   params: {
     location: location
     tags: tags
-    openAiName: 'oai-ner-${environmentName}-${location}-001'
+    openAiName: 'oai-cca-${environmentName}-${location}-001'
     openAiSku: 'S0'
     openAiCustomSubDomainName:'${abbrs.cognitiveServicesAccounts}${resourceToken}'
   }
@@ -66,7 +66,7 @@ module containerAppEnv 'core/container/containerAppEnvironment.bicep' = {
   params: {
     location: location
     tags: tags
-    containerAppEnvironmentName: '${abbrs.appManagedEnvironments}ner-${environmentName}-${location}-001'
+    containerAppEnvironmentName: '${abbrs.appManagedEnvironments}cca-${environmentName}-${location}-001'
     customerId: monitoring.outputs.logAnalyticsCustomerId
     sharedKey: monitoring.outputs.logAnalyticsPrimaryKey
   }
@@ -76,7 +76,7 @@ module containerRegistry 'shared/container/registry.bicep' = {
   name: '${abbrs.containerRegistryRegistries}${environmentName}${location}${deployment().name}${resourceToken}001'
   scope: resourceGroup(rg.name)
   params: {
-    acrName: '${abbrs.containerRegistryRegistries}ner${environmentName}${location}001'
+    acrName: '${abbrs.containerRegistryRegistries}cca${environmentName}${location}001'
     location: location
     acrSku: 'Basic'
   }
