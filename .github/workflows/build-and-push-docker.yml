@@ -39,7 +39,7 @@ jobs:
 
       - name: Deploy to Azure Container Apps
         working-directory: ./src
-        uses: azure/container-apps-deploy-action@v1
+        uses: azure/container-apps-deploy-action@v2
         with:
           containerAppName: ${{ env.CONTAINER_APP_NAME }}
           resourceGroup: ${{ env.RESOURCE_GROUP }}
