@@ -1,0 +1,16 @@
+{
+    "name": "CustomerComplaintAlert",
+    "image": "mcr.microsoft.com/devcontainers/python:3.12",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-azuretools.vscode-azurefunctions",
+                "ms-azuretools.vscode-azurestorage",
+                "GitHub.vscode-pull-request-github",
+                "GitHub.vscode-github-actions",
+                "ms-azuretools.vscode-bicep"
+            ]
+        }
+    }
+}

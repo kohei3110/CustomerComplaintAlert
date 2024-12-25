@@ -4,6 +4,13 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  CONTAINER_APP_NAME: ca-cca-demo-eastus-001
+  RESOURCE_GROUP: rg-cca-demo-eastus-001
+  PORT: 8000
+  INGRESS: external
+  FULL_IMAGE_NAME: ${{ inputs.ACR }}/${{ inputs.IMAGE_NAME }}:${{ inputs.TAG }}
+
 jobs:
   build:
     runs-on: self-hosted
@@ -29,3 +36,13 @@ jobs:
         run: |
           az acr build --registry crcustomercompliantalertdemoeastus001 \
                          --image customercompliantalert:${{ github.sha }} .
+
+      - name: Deploy to Azure Container Apps
+        working-directory: ./src
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          containerAppName: ${{ env.CONTAINER_APP_NAME }}
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          imageToDeploy: customercompliantalert:${{ github.sha }}
+          targetPort: ${{ env.PORT }}
+          ingress: ${{ env.INGRESS }}
