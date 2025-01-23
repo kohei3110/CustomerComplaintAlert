@@ -27,7 +27,7 @@ class EventHubService:
             blob_data = self.blob_storage_service.download_blob(container_name, blob_name, sas_token)
             return blob_data
         except Exception as e:
-            print(f"Error downloading blob: {e}")
+            print(f"Error downloading blob from container '{container_name}' and blob '{blob_name}': {e}")
             return None
 
 

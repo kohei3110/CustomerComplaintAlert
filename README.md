@@ -102,3 +102,20 @@ jobs:
           az acr build --registry crcustomercompliantalertdemoeastus001 \
                          --image customercompliantalert:${{ github.sha }} .
 ```
+
+## エラーメッセージガイドライン
+
+エラーメッセージは、PEP8ガイドラインに従って明確に出力される必要があります。以下のポイントに注意してください。
+
+- エラーメッセージは、何が問題であるかを明確に説明する必要があります。
+- エラーメッセージは、発生した場所（関数名、変数名など）を含める必要があります。
+- エラーメッセージは、可能であれば、問題を解決するためのヒントを提供する必要があります。
+- エラーメッセージは、ユーザーが理解しやすい言葉で書かれるべきです。
+
+例：
+```python
+try:
+    # 何らかの処理
+except Exception as e:
+    print(f"Error in function 'function_name': {e}")
+```

@@ -34,34 +34,38 @@ class OpenAIService:
 
 
     def get_complaint_score(self, df):
-        client = self.get_client()
-        results = []
-        for _, row in df.iterrows():
-            input = {
-                "id": str(row["クレームID"]),
-                "complaint": row["クレーム内容"],
-                "partner": row["販売パートナー"],
-                "customer": row["Cusomter"],
-                "product": row["対象製品"],
-                "date": row["日付"].isoformat() if hasattr(row["日付"], "isoformat") else row["日付"]
-            }
-            system_prompt = self.cosmos_db_service.get_system_prompt()
-            response = client.chat.completions.create(
-                model=self.deployment,
-                response_format={ "type": "json_object" },
-                messages=[
-                    {
-                        "role": "system",
-                        "content": system_prompt,
-                    },
-                    {
-                        "role": "user",
-                        "content": str(input),
-                    }
-                ]
-            )
-            print(f"Result: {response.choices[0].message.content}")
-            results.append(json.loads(response.choices[0].message.content))
-            # レート制限回避のため、10秒待機
-            time.sleep(10)
-        return results
+        try:
+            client = self.get_client()
+            results = []
+            for _, row in df.iterrows():
+                input = {
+                    "id": str(row["クレームID"]),
+                    "complaint": row["クレーム内容"],
+                    "partner": row["販売パートナー"],
+                    "customer": row["Cusomter"],
+                    "product": row["対象製品"],
+                    "date": row["日付"].isoformat() if hasattr(row["日付"], "isoformat") else row["日付"]
+                }
+                system_prompt = self.cosmos_db_service.get_system_prompt()
+                response = client.chat.completions.create(
+                    model=self.deployment,
+                    response_format={ "type": "json_object" },
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": system_prompt,
+                        },
+                        {
+                            "role": "user",
+                            "content": str(input),
+                        }
+                    ]
+                )
+                print(f"Result: {response.choices[0].message.content}")
+                results.append(json.loads(response.choices[0].message.content))
+                # レート制限回避のため、10秒待機
+                time.sleep(10)
+            return results
+        except Exception as e:
+            print(f"Error getting complaint score: {e}")
+            return None
