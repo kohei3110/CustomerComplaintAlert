@@ -8,7 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 azure-eventhub = "^5.13.0"
-azure-storage-blob = "^12.24.0"
+azure-storage-blob = "^12.25.1"
 fastapi = "^0.115.5"
 uvicorn = "^0.32.0"
 python-dotenv = "^1.0.1"
