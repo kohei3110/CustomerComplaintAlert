@@ -1,5 +1,5 @@
 from azure.communication.email import EmailClient
-
+import logging
 from datetime import datetime
 
 
@@ -7,13 +7,20 @@ class EmailService:
 
 
     def __init__(self, connection_string):
+        self.logger = logging.getLogger(__name__)
+        self.logger.info("Initializing EmailService")
         self.email_client = EmailClient.from_connection_string(connection_string)
+        self.logger.info("Email client initialized successfully")
 
     def send_email(self, complaint):
+        self.logger.info(f"Preparing to send email for complaint ID: {complaint['id']}")
         iso_date = complaint["date"]
         # 日付文字列をdatetimeオブジェクトに変換
+        self.logger.debug(f"Converting date string: {iso_date} to datetime")
         date_obj = datetime.fromisoformat(iso_date)
         formatted_date = f"{date_obj.month}月{date_obj.day}日{date_obj.hour}時{date_obj.minute}分"
+        self.logger.debug(f"Formatted date: {formatted_date}")
+        
         message = {
             # FIXME: 送信元アドレスを環境変数から取得する
             "senderAddress": "DoNotReply@12235659-377d-4f35-9e44-9528d57b475c.azurecomm.net",
@@ -65,8 +72,10 @@ class EmailService:
             
         }
         try:
+            self.logger.info(f"Sending email for complaint ID: {complaint['id']}")
             poller = self.email_client.begin_send(message)
             result = poller.result()
-            print(f"Email sent: {result}")
+            self.logger.info(f"Email sent successfully for complaint ID: {complaint['id']}, message ID: {result.message_id}")
+            self.logger.debug(f"Email result details: {result}")
         except Exception as e:
-            print(f"Failed to send email: {e}")
+            self.logger.error(f"Failed to send email for complaint ID: {complaint['id']}: {e}", exc_info=True)

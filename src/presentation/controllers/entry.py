@@ -1,4 +1,6 @@
 import os
+import logging
+import sys
 
 from fastapi import BackgroundTasks, FastAPI
 from dotenv import load_dotenv
@@ -10,6 +12,16 @@ from infrastructure.services.event_hub_service import EventHubService
 from application.services.event_processor import EventProcessor
 from infrastructure.services.openai_service import OpenAIService
 
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # Load environment variables from .env file
 load_dotenv()
@@ -23,6 +35,7 @@ async def run_event_processor():
     consumer_group = "$Default"
     blob_storage_connection_str = os.environ.get("BLOB_STORAGE_CONNECTION_STR")
 
+    logger.info("Initializing services...")
     blob_storage_service = BlobStorageService(blob_storage_connection_str)
     cosmos_db_service = CosmosDbService(os.environ.get("COSMOS_DB_CONNECTION_STR"))
     openai_service = OpenAIService()
@@ -32,7 +45,7 @@ async def run_event_processor():
     )
     event_processor = EventProcessor(event_hub_service)
 
-    print("Starting event processor...")
+    logger.info("Starting event processor...")
     await event_processor.start()
 
 
