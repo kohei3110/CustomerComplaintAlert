@@ -1,14 +1,19 @@
 from azure.cosmos import CosmosClient
 from azure.cosmos.exceptions import CosmosHttpResponseError
+import logging
 
 class CosmosDbService:
 
 
     def __init__(self, connection_string):
+        self.logger = logging.getLogger(__name__)
+        self.logger.info("Initializing CosmosDbService")
         self.cosmos_db_client = CosmosClient.from_connection_string(connection_string)
+        self.logger.info("CosmosDB client initialized successfully")
 
 
     def save_to_cosmos_db(self, df):
+        self.logger.info(f"Saving {len(df)} records to Cosmos DB")
         for _, row in df.iterrows():
             document = {
                 "id": str(row["クレームID"]),
@@ -20,22 +25,30 @@ class CosmosDbService:
                 "score": row.get("score", None)
             }
             try:
+                self.logger.debug(f"Upserting document with ID: {document['id']}")
                 self.cosmos_db_client.get_database_client("complaints_db") \
                     .get_container_client("complaints").upsert_item(document)
+                self.logger.info(f"Document with ID: {document['id']} upserted successfully")
             except CosmosHttpResponseError as e:
-                print(f"Failed to upsert item: {e.message}")
+                self.logger.error(f"Failed to upsert item with ID {document['id']}: {e.message}", exc_info=True)
 
 
     def get_system_prompt(self):
+        self.logger.info("Retrieving system prompt from Cosmos DB")
         try:
+            self.logger.debug("Querying prompts container for latest version")
             response = self.cosmos_db_client.get_database_client("complaints_db") \
                     .get_container_client("prompts").query_items(
                         query="SELECT * FROM c WHERE c.version = 'latest'",
                     )
             for item in response:
-                return item.get("prompt")
+                prompt = item.get("prompt")
+                self.logger.info("System prompt retrieved successfully")
+                self.logger.debug(f"Retrieved prompt (first 50 chars): {prompt[:50]}...")
+                return prompt
         except CosmosHttpResponseError as e:
-            print(f"Failed to query items: {e.message}")
+            self.logger.error(f"Failed to query items for system prompt: {e.message}", exc_info=True)
+            self.logger.info("Using default system prompt")
             # Default system prompt
             return """
                 お客様からの苦情内容を、不満度合いに基づいて1から5のスコアで評価してください。スコア5は最も不満が高いことを示します。
