@@ -23,7 +23,7 @@ class CosmosDbService:
                 self.cosmos_db_client.get_database_client("complaints_db") \
                     .get_container_client("complaints").upsert_item(document)
             except CosmosHttpResponseError as e:
-                print(f"Failed to upsert item: {e.message}")
+                print(f"Failed to upsert item with ID '{document['id']}' to Cosmos DB: {e.message}.")
 
 
     def get_system_prompt(self):
@@ -35,7 +35,7 @@ class CosmosDbService:
             for item in response:
                 return item.get("prompt")
         except CosmosHttpResponseError as e:
-            print(f"Failed to query items: {e.message}")
+            print(f"Failed to query prompt items from Cosmos DB: {e.message}.")
             # Default system prompt
             return """
                 お客様からの苦情内容を、不満度合いに基づいて1から5のスコアで評価してください。スコア5は最も不満が高いことを示します。

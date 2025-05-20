@@ -69,4 +69,4 @@ class EmailService:
             result = poller.result()
             print(f"Email sent: {result}")
         except Exception as e:
-            print(f"Failed to send email: {e}")
+            print(f"Failed to send email to '{complaint['customer']}': {e}.")

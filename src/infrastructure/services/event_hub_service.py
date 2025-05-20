@@ -27,7 +27,7 @@ class EventHubService:
             blob_data = self.blob_storage_service.download_blob(container_name, blob_name, sas_token)
             return blob_data
         except Exception as e:
-            print(f"Error downloading blob: {e}")
+            print(f"Error occurred while downloading blob from container '{container_name}': {e}.")
             return None
 
 
@@ -36,7 +36,7 @@ class EventHubService:
             df = pd.read_excel(BytesIO(blob_data), engine="openpyxl")
             return df
         except Exception as e:
-            print(f"Error reading Excel file: {e}")
+            print(f"Error occurred while reading Excel file: {e}.")
             return None
 
 
@@ -66,14 +66,14 @@ class EventHubService:
                                 if result.get("score") == 5:
                                     self.email_service.send_email(result)
                         else:
-                            print("Result is empty")
+                            print("Result is empty. No complaints to process.")
                     else:
-                        print("Excel data is None")
+                        print("Excel data is None. Unable to process the file.")
 
             partition_context.update_checkpoint(event)
 
         except (json.JSONDecodeError, KeyError, TypeError) as e:
-            print(f"Error processing event: {e}")
+            print(f"Error occurred while processing event: {e}.")
 
 
     async def start(self):
